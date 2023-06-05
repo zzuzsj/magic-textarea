@@ -83,7 +83,7 @@ watch(contentValue, () => {
 });
 
 onMounted(() => {
-  props.signalOperators.forEach((cv) => {
+  props.signalOperators?.forEach((cv) => {
     registerSignalOperator(cv);
   });
 });
@@ -91,23 +91,38 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .comment-input {
+  --magic-textarea-background-color: #ffffff;
+  --magic-textarea-border-color: #4d7cff;
+  --magic-textarea-border-radius: 8px;
+  --magic-textarea-border-color-hover: #2254f4;
+  --magic-textarea-text-color-primary: #222529;
+  --magic-textarea-text-color-disabled: #b4b8bf;
+  --magic-textarea-text-color-placeholder: #9da3ac;
+
   position: relative;
   width: 100%;
   height: auto;
-  background-color: var(--background-color-primary-regular);
-  border: 1px solid var(--border-color-primary-regular);
-  border-radius: var(--border-radius-large);
+  background-color: var(--magic-textarea-background-color);
+  border: 1px solid var(--magic-textarea-border-color);
+  border-radius: var(--magic-textarea-border-radius);
+  box-sizing: border-box;
+
+  p {
+    box-sizing: border-box;
+    padding: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+  }
 
   &:hover {
-    border: 1px solid var(--border-color-primary-hover) !important;
+    border: 1px solid var(--magic-textarea-border-color-hover) !important;
   }
 
-  &.inactive .comment-textarea {
-    height: 40px;
-  }
   &.focus {
-    color: var(--text-color-primary);
-    border: 1px solid var(--border-color-primary-hover) !important;
+    color: var(--magic-textarea-text-color-primary);
+    border: 1px solid var(--magic-textarea-border-color-hover) !important;
     outline: none;
   }
 
@@ -123,15 +138,16 @@ onMounted(() => {
     outline: none;
     cursor: auto;
     transition: 0.2s;
+    word-break: break-all;
 
     &.disabled {
       pointer-events: none;
-      color: var(--text-color-disabled);
+      color: var(--magic-textarea-text-color-disabled);
     }
 
     &[contenteditable][placeholder]:empty::before {
       position: absolute;
-      color: var(--text-color-placeholder);
+      color: var(--magic-textarea-text-color-placeholder);
       background-color: transparent;
       cursor: text;
       content: attr(placeholder);

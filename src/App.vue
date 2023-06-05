@@ -6,12 +6,19 @@
     <a href="https://vuejs.org/" target="_blank">
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
+    <div class="textarea-list">
+      <div class="base-textarea-container">
+        <BaseTextarea content="" placeholder="请输入内容" />
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { BaseTextarea } from ".";
+</script>
 
-<style scoped>
+<style lang="less" scoped>
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -23,5 +30,15 @@
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+.textarea-list {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: auto;
+  .base-textarea-container {
+    width: 360px;
+    height: 80px;
+  }
 }
 </style>

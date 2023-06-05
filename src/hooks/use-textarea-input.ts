@@ -133,7 +133,9 @@ export function useTextareaInput(options: {
         signalStartRange.value.$startOffset =
           signalStartRange.value.startOffset;
         const signalOperator = signalMap.get(isSignalStr);
-        setSignalOperatorStart(signalOperator);
+        if (signalOperator) {
+          setSignalOperatorStart(signalOperator);
+        }
       }
     }
 
