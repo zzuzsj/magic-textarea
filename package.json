@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/lodash-es": "^4.17.7",
     "@vueuse/core": "^10.1.2",
     "lodash-es": "^4.17.21",
     "vue": "^3.2.47"

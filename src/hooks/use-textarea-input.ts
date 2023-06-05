@@ -25,8 +25,8 @@ function setRangeNextWordFocus(inputDom: HTMLElement, focusOffset: number) {
   newRange.setEnd(inputDom, focusOffset);
   // 将 Range 对象对应的文本区域设置为新 Range 对象
   const selection = window.getSelection();
-  selection.removeAllRanges();
-  selection.addRange(newRange);
+  selection?.removeAllRanges();
+  selection?.addRange(newRange);
 }
 
 export function createSignalHTMLString(data: SignalData, domClass?: string) {
@@ -174,15 +174,21 @@ export function useTextareaInput(options: {
   function setSignalOperatorStart(signalOperator: SignalOperatorOptions) {
     currentSignalOperator = signalOperator;
     const funcs: ISignalHandleOperator = { confirm: noop, cancel: noop };
-    const p: Promise<SignalData> = new Promise((resolve, reject) => {
-      Object.assign(funcs, {
-        confirm: resolve,
-        cancel: reject,
-      });
-    });
-    p.then((data: SignalData, extraData?: ExtraData) => {
-      setSignalOperatorConfirm(data, extraData);
-    }).catch(() => {
+    const p: Promise<{ data: SignalData; extraData?: ExtraData }> = new Promise(
+      (resolve, reject) => {
+        Object.assign(funcs, {
+          confirm: (data: SignalData, extraData: ExtraData) => {
+            resolve({ data, extraData });
+          },
+          cancel: reject,
+        });
+      }
+    );
+    p.then(
+      ({ data, extraData }: { data: SignalData; extraData?: ExtraData }) => {
+        setSignalOperatorConfirm(data, extraData);
+      }
+    ).catch(() => {
       setSignalOperatorCancel();
     });
     currentSignalOperator.onSignalStart?.(
@@ -196,7 +202,11 @@ export function useTextareaInput(options: {
     data: SignalData,
     extraData?: Record<string, any>
   ) {
-    if (!signalStartRange.value || !currentRange.value)
+    if (
+      !signalStartRange.value ||
+      !currentRange.value ||
+      !currentSignalOperator
+    )
       throw new Error("当前不处于匹配操作中");
     deleteByRange(signalStartRange.value, currentRange.value);
     const { render, domClass } = currentSignalOperator;
@@ -211,11 +221,13 @@ export function useTextareaInput(options: {
     const { endContainer: endNode, endOffset } = signalStartRange.value;
     const isStartRangeText = endNode.nodeType === Node.TEXT_NODE;
     let focusOffset = endOffset;
-    let focusDom = inputDom.value;
-    if (isStartRangeText) {
-      focusDom = endNode.parentNode;
+    let focusDom: HTMLElement;
+    if (isStartRangeText && endNode.parentNode) {
+      focusDom = endNode.parentNode as HTMLElement;
       const nodeIndex = Array.from(focusDom.childNodes).indexOf(endNode);
       focusOffset = nodeIndex;
+    } else {
+      focusDom = inputDom.value!;
     }
 
     // 添加定时器是为了异步聚焦，防止和点击操作冲突导致聚焦失败
@@ -224,7 +236,7 @@ export function useTextareaInput(options: {
       const toFocusOffset = focusOffset + 2;
       setRangeNextWordFocus(focusDom, toFocusOffset);
       if (focusDom !== inputDom.value) {
-        focusDom.scrollIntoView({ block: "nearest", inline: "nearest" });
+        focusDom?.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
     });
     signalStartRange.value = undefined;
