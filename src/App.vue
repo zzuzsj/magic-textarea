@@ -10,12 +10,15 @@
       <div class="base-textarea-container">
         <BaseTextarea content="" placeholder="请输入内容" />
       </div>
+      <div class="base-textarea-container">
+        <MagicTextarea content="" placeholder="请输入内容" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BaseTextarea } from ".";
+import { BaseTextarea, MagicTextarea } from ".";
 </script>
 
 <style lang="less" scoped>
@@ -36,6 +39,7 @@ import { BaseTextarea } from ".";
   justify-content: space-around;
   width: 100%;
   height: auto;
+  column-gap: 16px;
   .base-textarea-container {
     width: 360px;
     height: 80px;

@@ -33,13 +33,7 @@ const props = defineProps<{
   autoFocus: boolean;
   signalOperators: SignalOperatorOptions[];
 }>();
-const emit = defineEmits([
-  "on-change",
-  "on-input",
-  "on-focus",
-  "on-blur",
-  "on-active-change",
-]);
+const emit = defineEmits(["change", "input", "focus", "blur", "active-change"]);
 const inputDom: Ref<HTMLElement | undefined> = ref();
 const {
   isFocus,
@@ -54,7 +48,7 @@ const {
   defaultContent: props.content,
   onInput: (e) => {
     const { data } = e;
-    emit("on-input", data);
+    emit("input", data);
   },
 });
 const isActive = computed(() => {
@@ -63,23 +57,25 @@ const isActive = computed(() => {
 
 // 暴露给外部使用
 defineExpose({
+  inputDom,
   setContent,
   toggleFocus,
+  registerSignalOperator,
 });
 
 watch(isFocus, () => {
   if (isFocus.value) {
-    emit("on-focus");
+    emit("focus");
   } else {
-    emit("on-blur");
+    emit("blur");
   }
 });
 watch(isActive, () => {
-  emit("on-active-change", isActive.value);
+  emit("active-change", isActive.value);
 });
 
 watch(contentValue, () => {
-  emit("on-change", contentValue.value);
+  emit("change", contentValue.value);
 });
 
 onMounted(() => {
