@@ -7,15 +7,15 @@ import type {
 import MenuList from "@/components/menu-list/index.vue";
 import BaseTextarea from "@/components/base-textarea/index.vue";
 
-export interface CommentUser {
-  user_id: string;
-  user_name: string;
-}
-
 export type RenderItem = Record<string, string | number | boolean> & {
   value: string;
   label: string;
 };
+
+interface SiganlStartCallback {
+  confirm: (data: SignalData) => void;
+  cancel: () => void;
+}
 
 // 获取光标在 inputDom 中的位置信息 以及输入框的宽高信息
 const getPositionFromRange = ({
@@ -36,6 +36,13 @@ const getPositionFromRange = ({
     height: inputHeight,
   } = inputDom.value.getBoundingClientRect();
   const range = window.getSelection()?.getRangeAt(0);
+  if (!range)
+    return {
+      top: 0,
+      left: 0,
+      width: inputWidth,
+      height: inputHeight,
+    };
   const { top, left } = range.getBoundingClientRect();
   const offsetTop = top - inputTop;
   const offsetLeft = left - inputLeft;
@@ -74,16 +81,13 @@ export function useSignalRegister({
       left: 0,
     });
     const domClass = signalClass;
-    const signalOperatorHandles: Ref<{
-      confirm: (data: SignalData) => void;
-      cancel: () => void;
-    } | null> = ref(null);
+    const signalOperatorHandles: Ref<SiganlStartCallback | null> = ref(null);
     const currentInputValue = ref("");
     const isSignalInputing = ref(false);
     let menuListNode: VNode | null = null;
 
     const renderMenuList = () => {
-      const onSelect = (item: RenderItem) => {
+      const onSelect = (type: string, item: RenderItem) => {
         const props = generateProps(item);
         const content = `${signal}${item.label}`;
         signalOperatorHandles.value?.confirm({
@@ -94,23 +98,28 @@ export function useSignalRegister({
         });
       };
       menuListNode = h(MenuList, {
+        // 通过 key 值让每次生成的 dom 节点唯一
+        key: Math.random().toString(),
+        width: 180,
         list: renderList,
         type,
         value: currentInputValue.value,
         onSelect,
       });
       render(menuListNode, containerNode.value);
-      console.log(menuListNode);
-      menuListNode.el!.style = {
-        position: "absolute",
-        left: `${currentRangePosition.value.left}px`,
-        top: `${currentRangePosition.value.top}px`,
-        zIndex: 1000,
-      };
+      if (menuListNode.el) {
+        menuListNode.el.setAttribute("data-signal-operator-ignore", "");
+        Object.assign(menuListNode.el.style, {
+          position: "absolute",
+          left: `${currentRangePosition.value.left}px`,
+          top: `${currentRangePosition.value.top + 24}px`,
+          zIndex: 1000,
+        });
+      }
     };
 
     const hideMenuList = () => {
-      menuListNode?.el?.remove();
+      menuListNode && menuListNode.el && menuListNode.el.remove(); // 移除之前的 DOM 节点
       menuListNode = null;
     };
 
@@ -124,7 +133,10 @@ export function useSignalRegister({
     //   }
     // });
 
-    const onSignalStart = (options: SignalOperatorCallbackData, funcs) => {
+    const onSignalStart = (
+      options: SignalOperatorCallbackData,
+      funcs: SiganlStartCallback
+    ) => {
       signalOperatorHandles.value = funcs;
       isSignalInputing.value = true;
       const { left, top } = getPositionFromRange(options);
@@ -138,11 +150,13 @@ export function useSignalRegister({
       signalOperatorHandles.value = null;
       currentInputValue.value = "";
       isSignalInputing.value = false;
+      hideMenuList();
     };
     const onSignalConfirm = () => {
       currentInputValue.value = "";
       isSignalInputing.value = false;
       signalOperatorHandles.value = null;
+      hideMenuList();
     };
     const onSignalInput = (
       options: SignalOperatorCallbackData,

@@ -42,6 +42,7 @@ const props = withDefaults(
     maxHeight: 360,
   }
 );
+
 const list = toRef(props, "list");
 const itemIndex = ref(0);
 const emit = defineEmits(["select"]);
@@ -94,7 +95,7 @@ defineExpose({
     color: #303133;
     background-color: #ffffff;
     &.menu-item-highlight {
-      color: #409eff;
+      color: #ffffff;
       background-color: #79bbff;
     }
   }

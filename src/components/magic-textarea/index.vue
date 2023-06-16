@@ -88,12 +88,15 @@ const handleContentChange = (val: string) => {
 
 <style lang="less">
 .member-signal-item {
+  padding: 0 4px;
   color: #409eff;
 }
 .page-signal-item {
+  padding: 0 4px;
   color: #e6a23c;
 }
 .tag-signal-item {
+  padding: 0 4px;
   color: #f56c6c;
 }
 </style>
