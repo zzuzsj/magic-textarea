@@ -1,89 +1,60 @@
 <template>
   <div class="magic-textarea" ref="containerNode">
-    <BaseTextarea
-      ref="baseTextarea"
-      :content="content"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      :readonly="readonly"
-      :autoFocus="autoFocus"
-      @change="handleContentChange"
-    />
+    <BaseTextarea ref="baseTextarea" v-bind="$attrs" v-on="$listeners" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import BaseTextarea from "@/components/base-textarea/index.vue";
+import { useSignalMenulist } from "@/hooks/use-signal-menulist";
 import { useSignalRegister } from "@/hooks/use-signal-register";
-import { onMounted, ref } from "vue";
+import type { RegisterOptions } from "@/types";
+import { isArray } from "lodash-es";
+import { onMounted, ref, toRef, watch } from "vue";
 
-defineProps<{
+const props = defineProps<{
+  // 初始内容
   content: string;
   placeholder: string;
   disabled: boolean;
   readonly: boolean;
+  // 渲染的时候是否自动聚焦
   autoFocus: boolean;
+  // 注册信息
+  options: RegisterOptions[];
 }>();
 const containerNode = ref();
 const baseTextarea = ref();
 const content = ref("");
-const generateList = (label: string, length: number) => {
-  return new Array(length).fill(0).map((_cv, i) => {
-    const index = i + 1;
-    return {
-      value: `${index}`,
-      label: `${label} ${index}`,
-    };
+const options = toRef(props, "options");
+
+const { registerOrUpdateSignal } = useSignalRegister({
+  baseTextarea,
+});
+const { createRegisterSignalOptions } = useSignalMenulist({
+  containerNode,
+});
+const isMounted = ref(false);
+
+// 注册或者更新选项列表
+const registerAllOptions = () => {
+  if (!(isArray(options.value) && options.value.length > 0)) return;
+  options.value.forEach((option) => {
+    const signalOption = createRegisterSignalOptions(option);
+    registerOrUpdateSignal(signalOption);
   });
 };
-const { registerSignal } = useSignalRegister({
-  containerNode,
-  baseTextarea,
+
+watch([options, isMounted], () => {
+  if (isMounted.value) {
+    registerAllOptions();
+  }
 });
 
 // 需要在 baseTextarea 渲染之后才能进行注册
 onMounted(() => {
-  registerSignal({
-    type: "member",
-    signal: "@",
-    signalClass: "member-signal-item",
-    renderList: generateList("用户", 20),
-    generateProps({ value, label }) {
-      return {
-        user_id: value,
-        user_name: label,
-      };
-    },
-  });
-  registerSignal({
-    type: "page",
-    signal: "/",
-    signalClass: "page-signal-item",
-    renderList: generateList("页面", 20),
-    generateProps({ value, label }) {
-      return {
-        page_id: value,
-        page_name: label,
-      };
-    },
-  });
-  registerSignal({
-    type: "tag",
-    signal: "#",
-    signalClass: "tag-signal-item",
-    renderList: generateList("话题", 20),
-    generateProps({ value, label }) {
-      return {
-        tag_id: value,
-        tag_name: label,
-      };
-    },
-  });
+  isMounted.value = true;
 });
-
-const handleContentChange = (val: string) => {
-  content.value = val;
-};
 </script>
 
 <style lang="less">

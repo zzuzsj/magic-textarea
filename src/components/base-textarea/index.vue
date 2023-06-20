@@ -20,19 +20,28 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, onMounted, ref, watch } from "vue";
-import { SignalOperatorOptions } from "@/types";
+import { Ref, computed, ref, watch } from "vue";
 import { useTextareaInput } from "@/hooks/use-textarea-input";
 
 // 该组件为不受控组件，从外部更改 content 不会更新内部的 contentValue 值，必须通过 expose 的 setContent 属性来控制（受限于 innerHTML 的实现）
-const props = defineProps<{
-  content: string;
-  placeholder: string;
-  disabled: boolean;
-  readonly: boolean;
-  autoFocus: boolean;
-  signalOperators: SignalOperatorOptions[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    // 初始内容
+    content: string;
+    placeholder: string;
+    disabled: boolean;
+    readonly: boolean;
+    // 渲染的时候是否自动聚焦
+    autoFocus: boolean;
+  }>(),
+  {
+    placeholder: "",
+    disabled: false,
+    content: "",
+    autoFocus: false,
+    readonly: false,
+  }
+);
 const emit = defineEmits(["change", "input", "focus", "blur", "active-change"]);
 const inputDom: Ref<HTMLElement | undefined> = ref();
 const {
@@ -76,12 +85,6 @@ watch(isActive, () => {
 
 watch(contentValue, () => {
   emit("change", contentValue.value);
-});
-
-onMounted(() => {
-  props.signalOperators?.forEach((cv) => {
-    registerSignalOperator(cv);
-  });
 });
 </script>
 

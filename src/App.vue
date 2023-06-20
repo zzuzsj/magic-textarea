@@ -8,10 +8,19 @@
     </a>
     <div class="textarea-list">
       <div class="base-textarea-container">
-        <BaseTextarea content="" placeholder="请输入内容" />
+        <BaseTextarea
+          content=""
+          placeholder="请输入内容"
+          @change="handleChange"
+        />
       </div>
       <div class="base-textarea-container">
-        <MagicTextarea content="" placeholder="请输入内容" />
+        <MagicTextarea
+          content=""
+          placeholder="请输入内容"
+          :options="initRegisterOptions"
+          @change="handleChange"
+        />
       </div>
     </div>
   </div>
@@ -19,6 +28,60 @@
 
 <script setup lang="ts">
 import { BaseTextarea, MagicTextarea } from ".";
+import { RenderItem } from "@/types";
+
+const generateList = (label: string, length: number) => {
+  return new Array(length).fill(0).map((_cv, i) => {
+    const index = i + 1;
+    return {
+      value: `${index}`,
+      label: `${label} ${index}`,
+    };
+  });
+};
+const initRegisterOptions = [
+  {
+    type: "member",
+    signal: "@",
+    signalClass: "member-signal-item",
+    renderList: generateList("用户", 20),
+    generateProps({ value, label }: RenderItem) {
+      return {
+        user_id: value,
+        user_name: label,
+      };
+    },
+  },
+  {
+    type: "page",
+    signal: "/",
+    signalClass: "page-signal-item",
+    renderList: generateList("页面", 20),
+    generateProps({ value, label }: RenderItem) {
+      return {
+        page_id: value,
+        page_name: label,
+      };
+    },
+  },
+  {
+    type: "tag",
+    signal: "#",
+    signalClass: "tag-signal-item",
+    renderList: generateList("话题", 20),
+    generateProps({ value, label }: RenderItem) {
+      return {
+        tag_id: value,
+        tag_name: label,
+      };
+    },
+  },
+];
+
+// 监听内容更改事件
+const handleChange = (val: string) => {
+  console.log(val);
+};
 </script>
 
 <style lang="less" scoped>

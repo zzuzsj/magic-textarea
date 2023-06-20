@@ -38,6 +38,7 @@ export function createSignalHTMLString(data: SignalData, domClass?: string) {
 }
 
 // 获取干净有效的 html 数据信息
+// 可以根据实际情况替换，判断是否是有有效内容
 export function getValidHTMLContent(val: string) {
   return (val || "")
     .replace(/&nbsp;/g, " ")

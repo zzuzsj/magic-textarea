@@ -1,4 +1,32 @@
-import { Ref } from "vue";
+import type { Ref } from "vue";
+
+export type BaseTextareaProps = Partial<{
+  // 初始内容
+  content: string;
+  placeholder: string;
+  disabled: boolean;
+  readonly: boolean;
+  // 渲染的时候是否自动聚焦
+  autoFocus: boolean;
+}>;
+
+export type RenderItem = Record<string, string | number | boolean> & {
+  value: string;
+  label: string;
+};
+
+export interface RegisterOptions {
+  // signal type
+  type: string;
+  // signal 起始符
+  signal: string;
+  // signal class
+  signalClass?: string;
+  // 渲染的列表
+  renderList: RenderItem[];
+  // 生成 signal-props 数据
+  generateProps: (item: RenderItem) => Record<string, any>;
+}
 
 export type ExtraData = Record<string, any>;
 export interface SignalData<T = Record<string, string | number>> {
