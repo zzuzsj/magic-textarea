@@ -35,6 +35,7 @@ const props = withDefaults(
     autoFocus: boolean;
   }>(),
   {
+    // 默认渲染文本
     placeholder: "",
     disabled: false,
     content: "",

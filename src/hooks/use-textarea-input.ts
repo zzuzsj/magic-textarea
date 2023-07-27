@@ -91,8 +91,6 @@ export function useTextareaInput(options: {
 
   function registerSignalOperator(registerOptions: SignalOperatorOptions) {
     const { type, signal } = registerOptions;
-    // 匹配符不能出现重复
-    if (signalOperatorMap.get(signal)) throw new Error("匹配符不能出现重复");
     signalMap.set(type, registerOptions);
     signalOperatorMap.set(signal, type);
   }
