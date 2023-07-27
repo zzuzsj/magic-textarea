@@ -153,6 +153,10 @@ const handleChange = (val) => {
 | readonly               | Boolean                 | false   | Is the content readonly.                      |
 | options[MagicTextarea] | Array                   | []      | An array of signal options used for register. |
 
+## Warning
+
+The HTML content returned by this input component has not been processed in any special way. Please take appropriate site defense measures on your own.
+
 ## License
 
 magic-textarea is licensed under the [MIT License](https://opensource.org/licenses/MIT).
