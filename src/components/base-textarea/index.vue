@@ -27,12 +27,12 @@ import { useTextareaInput } from "@/hooks/use-textarea-input";
 const props = withDefaults(
   defineProps<{
     // 初始内容
-    content: string;
-    placeholder: string;
-    disabled: boolean;
-    readonly: boolean;
+    content?: string;
+    placeholder?: string;
+    disabled?: boolean;
+    readonly?: boolean;
     // 渲染的时候是否自动聚焦
-    autoFocus: boolean;
+    autoFocus?: boolean;
   }>(),
   {
     // 默认渲染文本

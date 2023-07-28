@@ -142,7 +142,7 @@ export function useSignalMenulist({
       hideMenuList();
     };
     const onSignalInput = (
-      options: SignalOperatorCallbackData,
+      _options: SignalOperatorCallbackData,
       val: string
     ) => {
       currentInputValue.value = val;

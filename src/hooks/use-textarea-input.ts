@@ -15,6 +15,10 @@ import {
 } from "@/types";
 import { isFunction, noop } from "lodash-es";
 
+type InputEvent = Event & {
+  data?: string;
+};
+
 // 获取焦点并进行聚焦 焦点将会聚焦在开始输入节点的后一个元素上 需要区分开始聚焦节点是在 text 节点还是 p 节点
 function setRangeNextWordFocus(inputDom: HTMLElement, focusOffset: number) {
   inputDom.focus();
@@ -51,7 +55,7 @@ export function useTextareaInput(options: {
   inputDom: Ref<HTMLElement | undefined>;
   defaultFocus: boolean;
   defaultContent: string;
-  onInput?: (e: Event) => void;
+  onInput?: (e: InputEvent) => void;
 }) {
   const {
     inputDom,
@@ -103,11 +107,7 @@ export function useTextareaInput(options: {
     return { type, signal, inputDom, currentRange };
   }
 
-  function onInput(
-    e: Event & {
-      data?: string;
-    }
-  ) {
+  function onInput(e: InputEvent) {
     // 中文输入法还在输入时不做处理
     if (chineseInput.value) {
       e.preventDefault();
@@ -115,7 +115,7 @@ export function useTextareaInput(options: {
     }
     // 输入@, 缓存起始 range 对象
     handleInput?.(e);
-    const isSignalStr = signalOperatorMap.get(e.data);
+    const isSignalStr = signalOperatorMap.get(e.data!);
     if (isSignalStr) {
       // 匹配到新的起始符 需要把当前匹配操作清除
       if (currentSignalOperator) {
@@ -225,7 +225,9 @@ export function useTextareaInput(options: {
     let focusDom: HTMLElement;
     if (isStartRangeText && endNode.parentNode) {
       focusDom = endNode.parentNode as HTMLElement;
-      const nodeIndex = Array.from(focusDom.childNodes).indexOf(endNode);
+      const nodeIndex = Array.from(focusDom.childNodes).indexOf(
+        endNode as ChildNode
+      );
       focusOffset = nodeIndex;
     } else {
       focusDom = inputDom.value!;
@@ -354,13 +356,13 @@ export function useTextareaInput(options: {
       let shouldPreventFocusEvent = false;
       while (target && target !== document) {
         if (
-          target.nodeType === Node.ELEMENT_NODE &&
-          target.hasAttribute(preventDefaultAttribute)
+          (<Element>target).nodeType === Node.ELEMENT_NODE &&
+          (<Element>target).hasAttribute(preventDefaultAttribute)
         ) {
           shouldPreventFocusEvent = true;
           break;
         }
-        target = target.parentNode;
+        target = (<Element>target).parentNode;
       }
       if (shouldPreventFocusEvent) return;
       toggleFocus(false);

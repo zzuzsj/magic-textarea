@@ -8,5 +8,20 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  build: {
+    lib: {
+      entry: "./src/index.ts",
+      name: "magicTextarea",
+      fileName: (format) => `index.${format}.js`,
+    },
+    rollupOptions: {
+      external: ["vue"],
+      output: {
+        globals: {
+          vue: "Vue",
+        },
+      },
+    },
+  },
   plugins: [vue()],
 });

@@ -1,8 +1,36 @@
 {
   "name": "magic-textarea",
   "private": true,
+  "author": "Saiye",
+  "license": "MIT",
   "version": "1.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zzuzsj/magic-textarea"
+  },
+  "keywords": [
+    "magic",
+    "textarea",
+    "text",
+    "area",
+    "signal",
+    "member"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.es.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",

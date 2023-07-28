@@ -1,6 +1,6 @@
 <template>
   <div class="magic-textarea" ref="containerNode">
-    <BaseTextarea ref="baseTextarea" v-bind="$attrs" v-on="$listeners" />
+    <BaseTextarea ref="baseTextarea" v-bind="$attrs" />
   </div>
 </template>
 
@@ -12,20 +12,31 @@ import type { RegisterOptions } from "@/types";
 import { isArray } from "lodash-es";
 import { onMounted, ref, toRef, watch } from "vue";
 
-const props = defineProps<{
-  // 初始内容
-  content: string;
-  placeholder: string;
-  disabled: boolean;
-  readonly: boolean;
-  // 渲染的时候是否自动聚焦
-  autoFocus: boolean;
-  // 注册信息
-  options: RegisterOptions[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    // 初始内容
+    content?: string;
+    placeholder?: string;
+    disabled?: boolean;
+    readonly?: boolean;
+    // 渲染的时候是否自动聚焦
+    autoFocus?: boolean;
+    // 注册信息
+    options?: RegisterOptions[];
+  }>(),
+  {
+    // 默认渲染文本
+    placeholder: "",
+    disabled: false,
+    content: "",
+    autoFocus: false,
+    readonly: false,
+    // @ts-ignore
+    options: [],
+  }
+);
 const containerNode = ref();
 const baseTextarea = ref();
-const content = ref("");
 const options = toRef(props, "options");
 
 const { registerOrUpdateSignal } = useSignalRegister({
