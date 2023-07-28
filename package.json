@@ -1,6 +1,5 @@
 {
   "name": "magic-textarea",
-  "private": true,
   "author": "Saiye",
   "license": "MIT",
   "version": "1.0.0",
@@ -24,6 +23,7 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
   "files": [
     "dist"
